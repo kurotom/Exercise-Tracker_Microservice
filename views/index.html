@@ -12,7 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
 
-    <title>URL Shortener Microservice</title>
+    <script type="text/javascript" src="/assets/script.js"></script>
+
+    <title>Exercise tracker Microservice</title>
 
   </head>
   <body>
@@ -20,50 +22,70 @@
     <main>
 
       <h1>
-        URL Shortener Microservice
+        Exercise tracker
       </h1>
-      <div class="example">
-        <span>
-          Example:
-        </span>
-        <p class="">
-          <code>
-            POST [project_url]/api/shorturl
-          </code>
-          -
-          <code>
-            https://www.google.com
-          </code>
-        </p>
-      </div>
 
-      <div class="formDiv">
+      <section>
+        <div class="">
+          <form class="" action="/api/users" method="POST" data-form-user>
+            <fieldset>
+              <legend>User</legend>
+              <input type="text" name="username" value="" minlength="4" placeholder="Username" data-form-username>
+              <input type="submit" value="Send">
+            </fieldset>
+          </form>
+        </div>
+        <div class="">
+          <form class="" method="POST" data-form-exersice>
+            <fieldset>
+              <legend>Add exercises</legend>
+              <input type="text" name="userID" value="" placeholder="user id" data-form-id>
+              <input type="text" name="description" value="" placeholder="description" data-form-description>
+              <input type="text" name="duration" value="" placeholder="duration minutes" data-form-duration>
+              <!-- <input type="date" name="" value="" min="1970-01-01" max="" placeholder="date (yyyy-mm-dd)" data-form-date> -->
+              <input type="text" name="date" value="" minlength="10" maxlength="10" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" placeholder="date (yyyy-mm-dd)" data-form-date>
+              <input type="submit" value="Add">
+            </fieldset>
+          </form>
+        </div>
+      </section>
 
-        <form class="" action="/api/shorturl" method="POST">
-          <fieldset>
-            <legend>URL Shortener</legend>
+      <section>
+        <div class="">
+          <h2>The API</h2>
 
-            <span>URL:</span>
-            <input type="text" name="url" placeholder="https://www.freecodecamp.org/">
-            <input type="submit" name="" value="Post URL">
-          </fieldset>
-        </form>
+          <div class="content-example">
+            <div class="content-example-divs">
+              <p>GET</p>
 
-      </div>
+              <code>
+                <span id="apiurl">/api/users/USER_ID/logs</span><span id="apioptional">?[from][&to][&limit]</span>
+              </code>
+            </div>
 
-      <div class="content">
-        <h2>Usage:</h2>
-        <ul>
-          <li>
-            <a href="/api/shorturl/7">/api/shorturl/7</a>
-          </li>
-        </ul>
-      </div>
+            <div class="content-example-divs">
+              <p>Optional</p>
+              <ul>
+                <li>
+                  <span class="optional-parameters">from, to</span><span> = dates (yyyy-mm-dd)</span>
+                </li>
+                <li>
+                  <span class="optional-parameters">limit</span><span> = number</span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-      <div class="example">
-        <h2>Will Redirect to:</h2>
-        <span>https://forum.freecodecamp.org/</span>
-      </div>
+
+        </div>
+      </section>
+      <section class="api-example">
+        <h2>Example</h2>
+        <code> /api/users/USER_ID/logs?from=2022-11-20&to=2022-11-23&limit=5 </code>
+      </section>
+
+
+
 
       <footer>
         Developed by <a href="https://github.com/kurotom">@kurotom</a>

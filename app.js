@@ -6,14 +6,14 @@ let mongoose = require('mongoose');
 
 require('dotenv').config();
 
-const dns = require('dns');
+// const dns = require('dns');
 
 // Import Model
-let urlModel = require('./db_Model/url_model.js');
+const { UserModel, ExersiceModel } = require('./db_Model/project_models.js');
 
 
+////////////////////////////////////////////
 // MongoDB
-
 const settingsConnection = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -31,10 +31,8 @@ mongoose.connect(
   .catch((error) => {
     console.log(error);
   });
-//
+////////////////////////////////////////////
 
-
-app.use(bodyParser.urlencoded({extended: false}));
 
 
 app.get('/', (req, res) => {
@@ -43,7 +41,219 @@ app.get('/', (req, res) => {
 });
 
 
+// let id = new mongoose.Types.ObjectId()
+// console.log(id.toString())
+app.use(bodyParser.urlencoded({extended: false}));
+// API USERS
+app.post('/api/users', (req, res) => {
+  const nameUser = req.body.username;
 
+  UserModel.find({name: nameUser})
+    .then((response) => {
+
+      if (response.length > 0) {
+        res.json({
+          username: response[0].name,
+          _id: response[0]._id.toString(),
+        });
+
+      } else if (response.length === 0) {
+        const user = new UserModel({name: nameUser});
+        user.save()
+          .then((result) => {
+            // console.log(result);
+            res.json({api: 'api OK'});
+          })
+          .catch((error) => {
+            // console.log('Error Server -->', error);
+            res.json({error: 'Server Error'});
+          });
+      };
+    })
+    .catch((error) => {
+      // console.log(error);
+      res.json({error: 'Server Error'});
+    });
+});
+
+// API EXERSICES
+app.post('/api/users/:_id/exercises', (req, res) => {
+  // let id = new mongoose.Types.ObjectId()
+  // console.log(id.toString())
+  const userId = req.body.userID;
+  const description = req.body.description;
+  const duration = req.body.duration;
+  const date = req.body.date;
+
+  UserModel.find({_id: userId})
+    .then((userMatch) => {
+      // console.log(userMatch);
+      const excerUser = new ExersiceModel({
+        username: userMatch[0].name,
+        userid: userId,
+        description: description,
+        duration: duration,
+        date: date
+      })
+      excerUser.save()
+        .then((response) => {
+          console.log('save');
+          res.json({
+            _id: userId,
+            username: userMatch[0].name,
+            date: description,
+            duration: duration,
+            description: date
+          });
+        })
+        .catch((error) => {
+          // console.log(error);
+          res.json({error: 'Save Error'});
+        });
+    })
+    .catch((error) => {
+      // console.log(error);
+      res.json({error: 'Save Error - Query'});
+    });
+});
+
+
+app.get('/api/users/:_id/logs', (req, res) => {
+  console.log(req.params, req.query);
+  const id = req.params._id;
+
+  if (Object.keys(req.query).length > 0) {
+
+    const from = req.query.from;
+    const to = req.query.to;
+
+    let limitResult;
+    if (req.query.limit !== undefined && req.query.limit !== '') {
+      limitResult = parseInt(req.query.limit);
+    } else {
+      limitResult = 0
+    };
+    console.log(from, to, limitResult);
+
+    UserModel.find({_id: id})
+      .then((userMatch) => {
+        if (
+          from !== undefined &&
+          from !== '' &&
+          to === undefined ||
+          to === ''
+        ) {
+          console.log('---_>   ACA')
+          const fromTime = new Date(from);
+          ExersiceModel.find({userid: id})
+            .find({date: {$gte: fromTime}})
+            .limit(limitResult)
+            .exec()
+            .then((exersiceUser) => {
+              console.log(exersiceUser)
+              let fromFormat = fromTime.toUTCString().split(' ');
+              let resExercise = exersiceUser.map(item => {
+                let dateEx = item.date.toUTCString().split(' ');
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+                }
+                return result;
+              });
+              console.log(resExercise)
+              res.json({
+                _id: id,
+                username: userMatch[0].name,
+                from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
+                count: resExercise.length,
+                log: resExercise
+              })
+              })
+            .catch((err) => {
+              console.log(err)
+            })
+        };
+        if (
+          from !== undefined &&
+          from !== '' &&
+          to !== undefined &&
+          to !== ''
+        ) {
+          console.log('---_>   OTOR')
+          const fromTime = new Date(from);
+          const toTime = new Date(to);
+          ExersiceModel.find({userid: id})
+            .find({date: {$gte: fromTime, $lte: toTime}})
+            .limit(limitResult)
+            .exec()
+              .then((exersiceUser) => {
+                console.log(exersiceUser)
+
+                let fromFormat = fromTime.toUTCString().split(' ');
+                let toFormat = toTime.toUTCString().split(' ');
+
+                let resExercise = exersiceUser.map(item => {
+                  let dateEx = item.date.toUTCString().split(' ');
+                  let result = {
+                    description: item.description,
+                    duration: item.duration,
+                    date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+                  }
+                  return result;
+                })
+                res.json({
+                  _id: id,
+                  username: userMatch[0].name,
+                  from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
+                  to: `${toFormat[0].split(",")[0]} ${toFormat[2]} ${toFormat[1]} ${toFormat[3]}`,
+                  count: resExercise.length,
+                  log: resExercise
+                })
+
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+        };
+
+      })
+      .catch((error) => {
+        res.json({error: 'Save Error - Query'});
+      });
+
+  } else {
+    console.log('---> SIN parametros')
+    UserModel.find({_id: id})
+      .then((userMatch) => {
+        ExersiceModel.find({userid: id})
+          .then((exersiceUser) => {
+
+            let resExercise = exersiceUser.map(item => {
+              let dateEx = item.date.toUTCString().split(' ');
+              let result = {
+                description: item.description,
+                duration: item.duration,
+                date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+              }
+              return result;
+            })
+            res.json({
+              _id: id,
+              username: userMatch[0].name,
+              count: resExercise.length,
+              log: resExercise
+            })
+          })
+          .catch((error) => {
+            res.json({error: 'Save Error - Query'});
+          })
+      })
+      .catch((error) => {
+        res.json({error: 'Save Error - Query'});
+      });
+  }
+});
 
 
 app.use('/assets', express.static(__dirname + '/public'));

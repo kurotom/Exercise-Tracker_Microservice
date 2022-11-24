@@ -1,7 +1,7 @@
 {
-  "name": "excersice-tracker_microservice",
+  "name": "exersice-tracker_microservice",
   "version": "1.0.0",
-  "description": "Excersice Tracker - proyecto desafío Freecodecamp",
+  "description": "Exersice Tracker - proyecto desafío Freecodecamp",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/kurotom/Exercise-Tracker_Microservice.git"
   },
   "keywords": [
-    "excersice-tracker",
+    "exersice-tracker",
     "freecodecamp",
     "node"
   ],
