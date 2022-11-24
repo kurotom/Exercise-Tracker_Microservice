@@ -1,0 +1,10 @@
+run = "npm run start"
+entrypoint = "index.js"
+
+[packager]
+language = "nodejs"
+
+  [packager.features]
+  packageSearch = true
+  guessImports = true
+  enabledForHosting = false

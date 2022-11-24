@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+    <link rel="stylesheet" href="/assets/reset.css">
+    <link rel="stylesheet" href="/assets/index.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>URL Shortener Microservice</title>
+
+  </head>
+  <body>
+
+    <main>
+
+      <h1>
+        URL Shortener Microservice
+      </h1>
+      <div class="example">
+        <span>
+          Example:
+        </span>
+        <p class="">
+          <code>
+            POST [project_url]/api/shorturl
+          </code>
+          -
+          <code>
+            https://www.google.com
+          </code>
+        </p>
+      </div>
+
+      <div class="formDiv">
+
+        <form class="" action="/api/shorturl" method="POST">
+          <fieldset>
+            <legend>URL Shortener</legend>
+
+            <span>URL:</span>
+            <input type="text" name="url" placeholder="https://www.freecodecamp.org/">
+            <input type="submit" name="" value="Post URL">
+          </fieldset>
+        </form>
+
+      </div>
+
+      <div class="content">
+        <h2>Usage:</h2>
+        <ul>
+          <li>
+            <a href="/api/shorturl/7">/api/shorturl/7</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="example">
+        <h2>Will Redirect to:</h2>
+        <span>https://forum.freecodecamp.org/</span>
+      </div>
+
+      <footer>
+        Developed by <a href="https://github.com/kurotom">@kurotom</a>
+      </footer>
+
+    </main>
+
+  </body>
+</html>
