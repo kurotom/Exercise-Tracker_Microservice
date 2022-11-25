@@ -128,12 +128,12 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       excerUser.save()
         .then((responseSave) => {
           console.log('save');
-          let dateEx = responseSave.date.toUTCString().split(' ');
+
           res.json({
             username: responseSave.username,
             description: responseSave.description,
             duration: responseSave.duration,
-            date: item.date.toDateString(),
+            date: responseSave.date.toDateString(),
             _id: responseSave._id.toString(),
           });
         })
@@ -150,141 +150,251 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 
 app.get('/api/users/:_id/logs', (req, res) => {
-  console.log(req.params, req.query);
+  // console.log(req.params, req.query);
   const id = req.params._id;
 
-  if (Object.keys(req.query).length > 0) {
-
-    const from = req.query.from;
-    const to = req.query.to;
-
-    let limitResult;
-    if (req.query.limit !== undefined && req.query.limit !== '') {
-      limitResult = parseInt(req.query.limit);
-    } else {
-      limitResult = 0
-    };
-    console.log(from, to, limitResult);
-
-    UserModel.find({_id: id})
-      .then((userMatch) => {
-
-        console.log('log - parameters ---> ', userMatch)
-
-        if (
-          from !== undefined &&
-          from !== '' &&
-          to === undefined ||
-          to === ''
-        ) {
-          console.log('---_>   ACA')
-          const fromTime = new Date(from);
-          ExersiceModel.find({userid: id})
-            .find({date: {$gte: fromTime}})
-            .limit(limitResult)
-            .exec()
-            .then((exersiceUser) => {
-              console.log(exersiceUser)
-              let fromFormat = fromTime.toUTCString().split(' ');
-              let resExercise = exersiceUser.map(item => {
-                let dateEx = item.date.toUTCString().split(' ');
-                let result = {
-                  description: item.description,
-                  duration: item.duration,
-                  date: item.date.toDateString()
-                }
-                return result;
-              });
-              console.log(resExercise)
-              res.json({
-                username: exersiceUser[0].username,
-                count: resExercise.length,
-                _id: exersiceUser[0].userid.toString(),
-                from: fromTime.toDateString(),
-                log: resExercise
-              })
-            })
-            .catch((err) => {
-              console.log(err);
-              res.json({error: 'From time data'})
-            })
-        };
-        if (
-          from !== undefined &&
-          from !== '' &&
-          to !== undefined &&
-          to !== ''
-        ) {
-          console.log('---_>   OTOR')
-          const fromTime = new Date(from);
-          const toTime = new Date(to);
-          ExersiceModel.find({userid: id})
-            .find({date: {$gte: fromTime, $lte: toTime}})
-            .limit(limitResult)
-            .exec()
-            .then((exersiceUser) => {
-              console.log(exersiceUser[0].userid)
-
-              let resExercise = exersiceUser.map(item => {
-                let dateEx = item.date.toUTCString().split(' ');
-                let result = {
-                  description: item.description,
-                  duration: item.duration,
-                  date: item.date.toDateString()
-                }
-                return result;
-              })
-              res.json({
-                _id: exersiceUser[0].userid.toString(),
-                username: exersiceUser[0].username,
-                from: fromTime.toDateString(),
-                to: toTime.toDateString(),
-                count: resExercise.length,
-                log: resExercise
-              })
-            })
-            .catch((err) => {
-              console.log(err);
-              res.json({error: 'From To error data'})
-            })
-        };
-
-      })
-      .catch((error) => {
-        res.json({error: 'Save Error - Query'});
-      });
-
+  let limitResult;
+  if (req.query.limit !== undefined && req.query.limit !== '') {
+    limitResult = parseInt(req.query.limit);
   } else {
-    console.log('---> SIN parametros')
-    UserModel.find({_id: id})
-      .then((userMatch) => {
-        ExersiceModel.find({userid: id})
-          .then((exersiceUser) => {
+    limitResult = 0
+  };
 
-            let resExercise = exersiceUser.map(item => {
-              let dateEx = item.date.toUTCString().split(' ');
-              let result = {
-                description: item.description,
-                duration: item.duration,
-                date: item.date.toDateString()
-              }
-              return result;
+  if (req.query.from !== undefined && req.query.from !== '') {
+    if (req.query.to !== undefined && req.query.to !== '') {
+      console.log("----P   FROM TO")
+      const from = new Date(req.query.from);
+      const to = new Date(req.query.to);
+      UserModel.findById(id)
+        .exec()
+        .then((dataUSer) => {
+          ExersiceModel.find({userid: dataUSer._id})
+            .find({date: {$gte: from, $lte: to}})
+            .limit(limitResult)
+            .exec()
+            .then((exersiceUser) => {
+              console.log("----", exersiceUser)
+              let logData = [];
+              if (exersiceUser.length > 0) {
+                logData = exersiceUser.map(item => {
+                  let result = {
+                    description: item.description,
+                    duration: item.duration,
+                    date: item.date.toDateString()
+                  }
+                  return result;
+                });
+              };
+
+              res.json({
+                username: dataUSer.name,
+                count: exersiceUser.length,
+                _id: dataUSer._id.toString(),
+                log: logData
+              })
+
             })
-            res.json({
-              username: exersiceUser[0].username,
-              count: resExercise.length,
-              _id: exersiceUser[0].userid.toString(),
-              log: resExercise
+            .catch((error) => {
+              console.log(error)
             })
-          })
-          .catch((error) => {
-            res.json({error: 'Save Error - Query'});
-          })
-      })
-      .catch((error) => {
-        res.json({error: 'Query Error - no parameters'});
-      });
+
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } else {
+      console.log("----P   FROM ")
+      const from = req.query.from;
+      UserModel.findById(id)
+        .limit(limitResult)
+        .exec()
+        .then((dataUSer) => {
+          console.log(dataUSer)
+          ExersiceModel.find({userid: dataUSer._id.toString()})
+            .exec()
+            .then((exersiceUser) => {
+              console.log("----", exersiceUser)
+              let logData = [];
+              if (exersiceUser.length > 0) {
+                logData = exersiceUser.map(item => {
+                  let result = {
+                    description: item.description,
+                    duration: item.duration,
+                    date: item.date.toDateString()
+                  }
+                  return result;
+                });
+              };
+              res.json({
+                username: dataUSer.name,
+                count: exersiceUser.length,
+                _id: dataUSer._id.toString(),
+                log: logData
+              })
+
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
   }
+  else {
+    
+  }
+
+
+
+  // if (Object.keys(req.query).length > 0) {
+  //
+  //   const from = req.query.from;
+  //   const to = req.query.to;
+  //
+  //   console.log(from, to, limitResult, mongoose.Types.ObjectId(id));
+  //
+  //   UserModel.find({_id: id})
+  //     .then((userMatch) => {
+  //       console.log(userMatch)
+  //       console.log('log - parameters ---> ', userMatch)
+  //
+  //       if (
+  //         from !== undefined &&
+  //         from !== '' &&
+  //         to === undefined ||
+  //         to === ''
+  //       ) {
+  //         console.log('---_>   ACA')
+  //         const fromTime = new Date(from);
+  //         ExersiceModel.find({userid: mongoose.Types.ObjectId(id)})
+  //           .find({date: {$gte: fromTime}})
+  //           .limit(limitResult)
+  //           .exec()
+  //           .then((exersiceUser) => {
+  //             // console.log(exersiceUser)
+  //
+  //             if (exersiceUser.length > 0) {
+  //               let fromFormat = fromTime.toUTCString().split(' ');
+  //               let resExercise = exersiceUser.map(item => {
+  //                 let dateEx = item.date.toUTCString().split(' ');
+  //                 let result = {
+  //                   description: item.description,
+  //                   duration: item.duration,
+  //                   date: item.date.toDateString()
+  //                 }
+  //                 return result;
+  //               });
+  //               console.log(resExercise)
+  //               res.json({
+  //                 username: exersiceUser[0].username,
+  //                 count: resExercise.length,
+  //                 _id: exersiceUser[0].userid.toString(),
+  //                 from: fromTime.toDateString(),
+  //                 log: resExercise
+  //               })
+  //             }
+  //
+  //           })
+  //           .catch((err) => {
+  //             console.log(err);
+  //             res.json({error: 'From time data'})
+  //           })
+  //       };
+  //       if (
+  //         from !== undefined &&
+  //         from !== '' &&
+  //         to !== undefined &&
+  //         to !== ''
+  //       ) {
+  //         console.log('---_>   OTOR', userMatch)
+  //         const fromTime = new Date(from);
+  //         const toTime = new Date(to);
+  //         ExersiceModel.find({userid: mongoose.Types.ObjectId(id)})
+  //           .find({date: {$gte: fromTime, $lte: toTime}})
+  //           .limit(limitResult)
+  //           .exec()
+  //           .then((exersiceUser) => {
+  //             console.log('-X', userMatch)
+  //
+  //             if (exersiceUser.length > 0) {
+  //               let resExercise = exersiceUser.map(item => {
+  //                 let dateEx = item.date.toUTCString().split(' ');
+  //                 let result = {
+  //                   description: item.description,
+  //                   duration: item.duration,
+  //                   date: item.date.toDateString()
+  //                 }
+  //                 return result;
+  //               })
+  //               res.json({
+  //                 _id: exersiceUser[0].userid.toString(),
+  //                 username: exersiceUser[0].username,
+  //                 from: fromTime.toDateString(),
+  //                 to: toTime.toDateString(),
+  //                 count: resExercise.length,
+  //                 log: resExercise
+  //               })
+  //             }
+  //             // else {
+  //             //   console.log('ñ', userMatch)
+  //             //   res.json({
+  //             //     // _id: userMatch[0]._id.toString(),
+  //             //     // username: userMatch[0].username,
+  //             //     from: fromTime.toDateString(),
+  //             //     to: toTime.toDateString(),
+  //             //     count: 0,
+  //             //     log: []
+  //             //   })
+  //             // }
+  //
+  //
+  //           })
+  //           .catch((err) => {
+  //             console.log(err);
+  //             res.json({error: 'From To error data'})
+  //           })
+  //       };
+  //
+  //     })
+  //     .catch((error) => {
+  //       res.json({error: 'Save Error - Query'});
+  //     });
+  //
+  // } else {
+  //   console.log('---> SIN parametros')
+  //   UserModel.find({_id: id})
+  //     .then((userMatch) => {
+  //       ExersiceModel.find({userid: id})
+  //         .then((exersiceUser) => {
+  //
+  //           let resExercise = exersiceUser.map(item => {
+  //             let dateEx = item.date.toUTCString().split(' ');
+  //             let result = {
+  //               description: item.description,
+  //               duration: item.duration,
+  //               date: item.date.toDateString()
+  //             }
+  //             return result;
+  //           })
+  //           res.json({
+  //             username: exersiceUser[0].username,
+  //             count: resExercise.length,
+  //             _id: exersiceUser[0].userid.toString(),
+  //             log: resExercise
+  //           })
+  //         })
+  //         .catch((error) => {
+  //           res.json({error: 'Save Error - Query'});
+  //         })
+  //     })
+  //     .catch((error) => {
+  //       res.json({error: 'Query Error - no parameters'});
+  //     });
+  // }
+
 });
 
 
