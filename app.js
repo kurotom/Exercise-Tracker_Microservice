@@ -58,7 +58,7 @@ app.get('/api/users', (req, res) => {
           username: item.name
         }
       })
-      res.json({users: arrayUsers});
+      res.json(arrayUsers);
     })
     .catch((error) => {
       console.log(error);
