@@ -170,14 +170,14 @@ app.get('/api/users/:_id/logs', (req, res) => {
         .find({date: {$gte: from, $lte: to}})
         .limit(limitResult)
         .exec()
-        .then((exersiceUser) => {
+        .then((exersiceResponse) => {
           // console.log("----", exersiceUser)
           UserModel.findById(id)
             .exec()
             .then((dataUSer) => {
               let logData = [];
-              if (exersiceUser.length > 0) {
-                logData = exersiceUser.map(item => {
+              if (exersiceResponse.length > 0) {
+                logData = exersiceResponse.map(item => {
                   let result = {
                     description: item.description,
                     duration: item.duration,
@@ -186,12 +186,21 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   return result;
                 });
               };
-              res.json({
-                username: dataUSer.name,
-                count: logData.length,
-                _id: dataUSer._id.toString(),
-                log: logData
-              })
+              try {
+                res.json({
+                  username: exersiceResponse[0].username,
+                  count: exersiceResponse.length,
+                  _id: exersiceResponse[0].userid.toString(),
+                  log: logData
+                })
+              } catch (error) {
+                res.json({
+                  username: dataUSer.name,
+                  count: exersiceResponse.length,
+                  _id: dataUSer._id.toString(),
+                  log: logData
+                })
+              }
             })
             .catch((error) => {
               console.log('--- EXERSICE - USER TO', error)
@@ -208,14 +217,14 @@ app.get('/api/users/:_id/logs', (req, res) => {
         .find({date: {$gte: from}})
         .limit(limitResult)
         .exec()
-        .then((exersiceUser) => {
+        .then((exersiceResponse) => {
           UserModel.findById(id)
             .exec()
             .then((dataUSer) => {
               console.log(dataUSer)
               let logData = [];
-              if (exersiceUser.length > 0) {
-                logData = exersiceUser.map(item => {
+              if (exersiceResponse.length > 0) {
+                logData = exersiceResponse.map(item => {
                   let result = {
                     description: item.description,
                     duration: item.duration,
@@ -224,12 +233,21 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   return result;
                 });
               };
-              res.json({
-                username: dataUSer.name,
-                count: logData.length,
-                _id: dataUSer._id.toString(),
-                log: logData
-              })
+              try {
+                res.json({
+                  username: dataUSer.name,
+                  count: logData.length,
+                  _id: dataUSer._id.toString(),
+                  log: logData
+                })
+              } catch (error) {
+                res.json({
+                  username: dataUSer.name,
+                  count: exersiceResponse.length,
+                  _id: dataUSer._id.toString(),
+                  log: logData
+                })
+              }
 
             })
             .catch((error) => {
@@ -263,12 +281,22 @@ app.get('/api/users/:_id/logs', (req, res) => {
           .exec()
           .then((dataUSer) => {
             console.log(exersiceResponse[0])
-            res.json({
-              username: exersiceResponse[0].username,
-              count: exersiceResponse.length,
-              _id: exersiceResponse[0].userid.toString(),
-              log: logData
-            })
+            try {
+              res.json({
+                username: exersiceResponse[0].username,
+                count: exersiceResponse.length,
+                _id: exersiceResponse[0].userid.toString(),
+                log: logData
+              })
+            } catch (error) {
+              res.json({
+                username: dataUSer.name,
+                count: exersiceResponse.length,
+                _id: dataUSer._id.toString(),
+                log: logData
+              })
+            }
+
 
           })
 
