@@ -196,7 +196,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
               res.json({
                 username: exersiceUser[0].username,
                 count: resExercise.length,
-                _id: exersiceUser[0]._id.toString(),
+                _id: exersiceUser[0].userid.toString(),
                 from: fromTime.toDateString(),
                 log: resExercise
               })
@@ -220,10 +220,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
             .limit(limitResult)
             .exec()
               .then((exersiceUser) => {
-                console.log(exersiceUser)
-
-                let fromFormat = fromTime.toUTCString().split(' ');
-                let toFormat = toTime.toUTCString().split(' ');
+                console.log(exersiceUser[0].userid)
 
                 let resExercise = exersiceUser.map(item => {
                   let dateEx = item.date.toUTCString().split(' ');
@@ -235,7 +232,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   return result;
                 })
                 res.json({
-                  _id: exersiceUser[0]._id.toString(),
+                  _id: exersiceUser[0].userid.toString(),
                   username: exersiceUser[0].username,
                   from: fromTime.toDateString(),
                   to: toTime.toDateString(),
@@ -274,7 +271,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
             res.json({
               username: exersiceUser[0].username,
               count: resExercise.length,
-              _id: exersiceUser[0]._id.toString(),
+              _id: exersiceUser[0].userid.toString(),
               log: resExercise
             })
           })
