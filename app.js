@@ -133,7 +133,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             username: responseSave.username,
             description: responseSave.description,
             duration: responseSave.duration,
-            date: item.toDateString(),
+            date: item.date.toDateString(),
             _id: responseSave._id.toString(),
           });
         })
@@ -188,7 +188,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
                 let result = {
                   description: item.description,
                   duration: item.duration,
-                  date: item.toDateString()
+                  date: item.date.toDateString()
                 }
                 return result;
               });
@@ -230,7 +230,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   let result = {
                     description: item.description,
                     duration: item.duration,
-                    date: item.toDateString()
+                    date: item.date.toDateString()
                   }
                   return result;
                 })
@@ -267,7 +267,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
               let result = {
                 description: item.description,
                 duration: item.duration,
-                date: item.toDateString()
+                date: item.date.toDateString()
               }
               return result;
             })
