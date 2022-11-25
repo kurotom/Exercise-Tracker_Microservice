@@ -272,9 +272,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
               return result;
             })
             res.json({
-              username: userMatch[0].name,
+              username: exersiceUser[0].username,
               count: resExercise.length,
-              _id: id,
+              _id: exersiceUser[0]._id.toString(),
               log: resExercise
             })
           })
