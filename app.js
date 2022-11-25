@@ -52,7 +52,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.get('/api/users', (req, res) => {
   UserModel.find()
     .then((response) => {
-      console.log(response);
       let arrayUsers = response.map(item => {
         return {
           _id: item._id.toString(),
@@ -131,11 +130,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
           console.log('save');
           let dateEx = responseSave.date.toUTCString().split(' ');
           res.json({
-            username: userMatch[0].name,
-            description: description,
-            duration: parseInt(duration),
+            username: responseSave.username,
+            description: responseSave.description,
+            duration: responseSave.duration,
             date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`,
-            _id: userId,
+            _id: responseSave._id.toString(),
           });
         })
         .catch((error) => {
