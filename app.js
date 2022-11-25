@@ -147,37 +147,6 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       // console.log(error);
       res.json({error: 'Save Error - Query'});
     });
-
-  // UserModel.find({_id: userId})
-  //   .then((userMatch) => {
-  //     const excerUser = new ExersiceModel({
-  //       username: userMatch[0].name,
-  //       userid: userId,
-  //       description: description,
-  //       duration: parseInt(duration),
-  //       date: date
-  //     })
-  //     excerUser.save()
-  //       .then((responseSave) => {
-  //         console.log('save');
-  //
-  //         res.json({
-  //           username: responseSave.username,
-  //           description: responseSave.description,
-  //           duration: responseSave.duration,
-  //           date: responseSave.date.toDateString(),
-  //           _id: responseSave._id.toString(),
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         // console.log(error);
-  //         res.json({error: 'Save Error'});
-  //       });
-  //   })
-  //   .catch((error) => {
-  //     // console.log(error);
-  //     res.json({error: 'Save Error - Query'});
-  //   });
 });
 
 
@@ -278,25 +247,26 @@ app.get('/api/users/:_id/logs', (req, res) => {
       .limit(limitResult)
       .exec()
       .then((exersiceResponse) => {
+        let logData = [];
+        if (exersiceResponse.length > 0) {
+          logData = exersiceResponse.map(item => {
+            let result = {
+              description: item.description,
+              duration: item.duration,
+              date: item.date.toDateString()
+            }
+            return result;
+          });
+        };
+
         UserModel.findById(id)
           .exec()
           .then((dataUSer) => {
-            let logData = [];
-            if (exersiceResponse.length > 0) {
-              logData = exersiceResponse.map(item => {
-                let result = {
-                  description: item.description,
-                  duration: item.duration,
-                  date: item.date.toDateString()
-                }
-                return result;
-              });
-            };
-
+            console.log(exersiceResponse[0])
             res.json({
-              username: dataUSer.name,
-              count: logData.length,
-              _id: dataUSer._id.toString(),
+              username: exersiceResponse[0].username,
+              count: exersiceResponse.length,
+              _id: exersiceResponse[0].userid.toString(),
               log: logData
             })
 
