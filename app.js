@@ -62,7 +62,10 @@ app.post('/api/users', (req, res) => {
         user.save()
           .then((result) => {
             // console.log(result);
-            res.json({api: 'api OK'});
+            res.json({
+              username: result[0].name,
+              _id: result[0]._id.toString(),
+            });
           })
           .catch((error) => {
             // console.log('Error Server -->', error);
