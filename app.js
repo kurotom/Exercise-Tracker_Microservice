@@ -204,13 +204,14 @@ app.get('/api/users/:_id/logs', (req, res) => {
         })
     } else {
       console.log("----P   FROM ")
-      const from = req.query.from;
+      const from = new Date(req.query.from);
       UserModel.findById(id)
         .limit(limitResult)
         .exec()
         .then((dataUSer) => {
           console.log(dataUSer)
           ExersiceModel.find({userid: dataUSer._id.toString()})
+            .find({date: {$gte: from}})
             .exec()
             .then((exersiceUser) => {
               console.log("----", exersiceUser)
@@ -244,7 +245,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
     }
   }
   else {
-    
+
   }
 
 
