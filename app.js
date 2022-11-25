@@ -133,7 +133,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             username: responseSave.username,
             description: responseSave.description,
             duration: responseSave.duration,
-            date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`,
+            date: item.toDateString(),
             _id: responseSave._id.toString(),
           });
         })
@@ -188,7 +188,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
                 let result = {
                   description: item.description,
                   duration: item.duration,
-                  date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+                  date: item.toDateString()
                 }
                 return result;
               });
@@ -197,7 +197,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
                 username: userMatch[0].name,
                 count: resExercise.length,
                 _id: id,
-                from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
+                from: fromTime.toDateString(),
                 log: resExercise
               })
             })
@@ -230,15 +230,15 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   let result = {
                     description: item.description,
                     duration: item.duration,
-                    date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+                    date: item.toDateString()
                   }
                   return result;
                 })
                 res.json({
                   _id: id,
                   username: userMatch[0].name,
-                  from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
-                  to: `${toFormat[0].split(",")[0]} ${toFormat[2]} ${toFormat[1]} ${toFormat[3]}`,
+                  from: fromTime.toDateString(),
+                  to: toTime.toDateString(),
                   count: resExercise.length,
                   log: resExercise
                 })
@@ -267,7 +267,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
               let result = {
                 description: item.description,
                 duration: item.duration,
-                date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`
+                date: item.toDateString()
               }
               return result;
             })
