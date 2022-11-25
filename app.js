@@ -129,14 +129,6 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       excerUser.save()
         .then((responseSave) => {
           console.log('save');
-
-          // res.json({
-          //   username: responseSave.username,
-          //   description: responseSave.description,
-          //   duration: responseSave.duration,
-          //   date: responseSave.date.toDateString(),
-          //   _id: responseSave._id.toString(),
-          // });
         })
         .catch((error) => {
           // console.log(error);
@@ -205,15 +197,15 @@ app.get('/api/users/:_id/logs', (req, res) => {
       console.log("----P   FROM TO")
       const from = new Date(req.query.from);
       const to = new Date(req.query.to);
-      UserModel.findById(id)
+      ExersiceModel.find({userid: id})
+        .find({date: {$gte: from, $lte: to}})
+        .limit(limitResult)
         .exec()
-        .then((dataUSer) => {
-          ExersiceModel.find({userid: dataUSer._id})
-            .find({date: {$gte: from, $lte: to}})
-            .limit(limitResult)
+        .then((exersiceUser) => {
+          // console.log("----", exersiceUser)
+          UserModel.findById(id)
             .exec()
-            .then((exersiceUser) => {
-              console.log("----", exersiceUser)
+            .then((dataUSer) => {
               let logData = [];
               if (exersiceUser.length > 0) {
                 logData = exersiceUser.map(item => {
@@ -225,36 +217,33 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   return result;
                 });
               };
-
               res.json({
                 username: dataUSer.name,
-                count: exersiceUser.length,
+                count: logData.length,
                 _id: dataUSer._id.toString(),
                 log: logData
               })
-
             })
             .catch((error) => {
-              console.log(error)
-            })
-
+              console.log('--- EXERSICE - USER TO', error)
+            });
         })
         .catch((error) => {
-          console.log(error)
-        })
+          console.log('--- EXERSICE TO', error)
+        });
+
     } else {
       console.log("----P   FROM ")
       const from = new Date(req.query.from);
-      UserModel.findById(id)
+      ExersiceModel.find({userid: id})
+        .find({date: {$gte: from}})
         .limit(limitResult)
         .exec()
-        .then((dataUSer) => {
-          console.log(dataUSer)
-          ExersiceModel.find({userid: dataUSer._id.toString()})
-            .find({date: {$gte: from}})
+        .then((exersiceUser) => {
+          UserModel.findById(id)
             .exec()
-            .then((exersiceUser) => {
-              console.log("----", exersiceUser)
+            .then((dataUSer) => {
+              console.log(dataUSer)
               let logData = [];
               if (exersiceUser.length > 0) {
                 logData = exersiceUser.map(item => {
@@ -268,51 +257,56 @@ app.get('/api/users/:_id/logs', (req, res) => {
               };
               res.json({
                 username: dataUSer.name,
-                count: exersiceUser.length,
+                count: logData.length,
                 _id: dataUSer._id.toString(),
                 log: logData
               })
 
             })
             .catch((error) => {
-              console.log(error)
+              console.log('--- EXERSICE - USER FROM TO', error)
             })
-
         })
         .catch((error) => {
-          console.log(error)
+          console.log('--- EXERSICE FROM TO', error)
         })
     }
   }
   else {
     console.log('--- >   sin parametros')
-    ExersiceModel.find({userid: dataUSer._id.toString()})
+    ExersiceModel.find({userid: id})
       .limit(limitResult)
       .exec()
-      .then((exersiceUser) => {
-        console.log("----", exersiceUser)
-        let logData = [];
-        if (exersiceUser.length > 0) {
-          logData = exersiceUser.map(item => {
-            let result = {
-              description: item.description,
-              duration: item.duration,
-              date: item.date.toDateString()
-            }
-            return result;
-          });
-        };
-        res.json({
-          username: dataUSer.name,
-          count: exersiceUser.length,
-          _id: dataUSer._id.toString(),
-          log: logData
-        })
+      .then((exersiceResponse) => {
+        UserModel.findById(id)
+          .exec()
+          .then((dataUSer) => {
+            let logData = [];
+            if (exersiceResponse.length > 0) {
+              logData = exersiceResponse.map(item => {
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: item.date.toDateString()
+                }
+                return result;
+              });
+            };
+
+            res.json({
+              username: dataUSer.name,
+              count: logData.length,
+              _id: dataUSer._id.toString(),
+              log: logData
+            })
+
+          })
 
       })
       .catch((error) => {
-        console.log(error)
+        res.json({error: 'Server Error - (query no parameters)'})
       })
+
   }
 
 
