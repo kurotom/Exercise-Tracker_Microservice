@@ -245,7 +245,43 @@ app.get('/api/users/:_id/logs', (req, res) => {
     }
   }
   else {
+    console.log('--- >   sin parametros')
+    UserModel.findById(id)
+      .limit(limitResult)
+      .exec()
+      .then((dataUSer) => {
+        console.log(dataUSer)
+        ExersiceModel.find({userid: dataUSer._id.toString()})
+          .exec()
+          .then((exersiceUser) => {
+            console.log("----", exersiceUser)
+            let logData = [];
+            if (exersiceUser.length > 0) {
+              logData = exersiceUser.map(item => {
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: item.date.toDateString()
+                }
+                return result;
+              });
+            };
+            res.json({
+              username: dataUSer.name,
+              count: exersiceUser.length,
+              _id: dataUSer._id.toString(),
+              log: logData
+            })
 
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
 
