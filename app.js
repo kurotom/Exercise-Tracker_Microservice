@@ -44,7 +44,29 @@ app.get('/', (req, res) => {
 // let id = new mongoose.Types.ObjectId()
 // console.log(id.toString())
 app.use(bodyParser.urlencoded({extended: false}));
+// 
+
+//
+//
 // API USERS
+app.get('/api/users', (req, res) => {
+  UserModel.find()
+    .then((response) => {
+      console.log(response);
+      let arrayUsers = response.map(item => {
+        return {
+          _id: item._id.toString(),
+          username: item.name
+        }
+      })
+      res.json({users: arrayUsers});
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({error: 'Server Internal Error - user'})
+    })
+})
+
 app.post('/api/users', (req, res) => {
   const nameUser = req.body.username;
 
@@ -58,13 +80,12 @@ app.post('/api/users', (req, res) => {
         });
 
       } else if (response.length === 0) {
-        const user = new UserModel({name: nameUser});
-        user.save()
+        const userCreate = new UserModel({name: nameUser});
+        userCreate.save()
           .then((result) => {
-            // console.log(result);
             res.json({
-              username: result[0].name,
-              _id: result[0]._id.toString(),
+              username: result.name,
+              _id: result._id.toString(),
             });
           })
           .catch((error) => {
@@ -79,6 +100,8 @@ app.post('/api/users', (req, res) => {
     });
 });
 
+//
+//
 // API EXERSICES
 app.post('/api/users/:_id/exercises', (req, res) => {
   // let id = new mongoose.Types.ObjectId()
