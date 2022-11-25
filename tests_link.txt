@@ -1,0 +1,11 @@
+
+http://127.0.0.1:3000/api/users/637fbfdb026163183f4b6943/logs
+
+http://127.0.0.1:3000/api/users/637fbfdb026163183f4b6943/logs?from=2019-03-03
+
+http://127.0.0.1:3000/api/users/637fbfdb026163183f4b6943/logs?from=2020-03-03&to=2021-09-03
+
+http://127.0.0.1:3000/api/users/637fbfdb026163183f4b6943/logs?from=2010-11-03&to=2022-03-03&limit=1
+
+
+

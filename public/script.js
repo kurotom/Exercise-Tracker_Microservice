@@ -35,8 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (
       userID.value !== '' &&
       exersice.value !== '' &&
-      duration.value !== '' &&
-      date.value !== ''
+      duration.value !== ''
     ) {
       const urlpost = `/api/users/${userID.value}/exercises`;
       exerciseForm.action = urlpost;

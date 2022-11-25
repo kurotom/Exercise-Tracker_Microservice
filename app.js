@@ -83,27 +83,33 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   const userId = req.body.userID;
   const description = req.body.description;
   const duration = req.body.duration;
-  const date = req.body.date;
+  let date = '';
+  if (req.body.date === '' || req.body.date === '') {
+    let fecha = new Date();
+    date = `${fecha.getFullYear()}-${fecha.getMonth() < 10? '0' + fecha.getMonth() + 1: fecha.getMonth()}-${fecha.getDate() < 10? '0' + fecha.getDate() + 1: fecha.getDate()}`
+  } else {
+    date = req.body.date;
+  }
 
   UserModel.find({_id: userId})
     .then((userMatch) => {
-      // console.log(userMatch);
       const excerUser = new ExersiceModel({
         username: userMatch[0].name,
         userid: userId,
         description: description,
-        duration: duration,
+        duration: parseInt(duration),
         date: date
       })
       excerUser.save()
-        .then((response) => {
+        .then((responseSave) => {
           console.log('save');
+          let dateEx = responseSave.date.toUTCString().split(' ');
           res.json({
             _id: userId,
             username: userMatch[0].name,
-            date: description,
-            duration: duration,
-            description: date
+            date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`,
+            duration: parseInt(duration),
+            description: description,
           });
         })
         .catch((error) => {
@@ -171,7 +177,8 @@ app.get('/api/users/:_id/logs', (req, res) => {
               })
               })
             .catch((err) => {
-              console.log(err)
+              console.log(err);
+              res.json({error: 'From time data'})
             })
         };
         if (
@@ -213,7 +220,8 @@ app.get('/api/users/:_id/logs', (req, res) => {
 
               })
               .catch((err) => {
-                console.log(err)
+                console.log(err);
+                res.json({error: 'From To error data'})
               })
         };
 
@@ -250,7 +258,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
           })
       })
       .catch((error) => {
-        res.json({error: 'Save Error - Query'});
+        res.json({error: 'Query Error - no parameters'});
       });
   }
 });
