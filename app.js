@@ -150,7 +150,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 
 app.get('/api/users/:_id/logs', (req, res) => {
-  // console.log(req.params, req.query);
+  console.log('qurey LOGS aprams', req.params, req.query);
   const id = req.params._id;
 
   let limitResult;
