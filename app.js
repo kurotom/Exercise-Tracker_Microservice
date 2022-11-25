@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 // let id = new mongoose.Types.ObjectId()
 // console.log(id.toString())
 app.use(bodyParser.urlencoded({extended: false}));
-// 
+//
 
 //
 //
@@ -131,11 +131,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
           console.log('save');
           let dateEx = responseSave.date.toUTCString().split(' ');
           res.json({
-            _id: userId,
             username: userMatch[0].name,
-            date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`,
-            duration: parseInt(duration),
             description: description,
+            duration: parseInt(duration),
+            date: `${dateEx[0].split(",")[0]} ${dateEx[2]} ${dateEx[1]} ${dateEx[3]}`,
+            _id: userId,
           });
         })
         .catch((error) => {
@@ -195,13 +195,13 @@ app.get('/api/users/:_id/logs', (req, res) => {
               });
               console.log(resExercise)
               res.json({
-                _id: id,
                 username: userMatch[0].name,
-                from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
                 count: resExercise.length,
+                _id: id,
+                from: `${fromFormat[0].split(",")[0]} ${fromFormat[2]} ${fromFormat[1]} ${fromFormat[3]}`,
                 log: resExercise
               })
-              })
+            })
             .catch((err) => {
               console.log(err);
               res.json({error: 'From time data'})
@@ -273,9 +273,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
               return result;
             })
             res.json({
-              _id: id,
               username: userMatch[0].name,
               count: resExercise.length,
+              _id: id,
               log: resExercise
             })
           })
