@@ -118,7 +118,6 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
   UserModel.find({_id: userId})
     .then((userMatch) => {
-
       const excerUser = new ExersiceModel({
         username: userMatch[0].name,
         userid: userId,
@@ -130,62 +129,23 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         .then((responseSave) => {
           console.log('save');
 
-          // res.json({
-          //   username: responseSave.username,
-          //   description: responseSave.description,
-          //   duration: responseSave.duration,
-          //   date: responseSave.date.toDateString(),
-          //   _id: responseSave._id.toString(),
-          // });
+          res.json({
+            username: responseSave.username,
+            description: responseSave.description,
+            duration: responseSave.duration,
+            date: responseSave.date.toDateString(),
+            _id: responseSave._id.toString(),
+          });
         })
         .catch((error) => {
           // console.log(error);
           res.json({error: 'Save Error'});
         });
-
-      res.json({
-        username: userMatch[0].name,
-        userid: userId,
-        description: description,
-        duration: parseInt(duration),
-        date: new Date(date).toDateString()
-      })
     })
     .catch((error) => {
       // console.log(error);
       res.json({error: 'Save Error - Query'});
     });
-
-  // UserModel.find({_id: userId})
-  //   .then((userMatch) => {
-  //     const excerUser = new ExersiceModel({
-  //       username: userMatch[0].name,
-  //       userid: userId,
-  //       description: description,
-  //       duration: parseInt(duration),
-  //       date: date
-  //     })
-  //     excerUser.save()
-  //       .then((responseSave) => {
-  //         console.log('save');
-  //
-  //         res.json({
-  //           username: responseSave.username,
-  //           description: responseSave.description,
-  //           duration: responseSave.duration,
-  //           date: responseSave.date.toDateString(),
-  //           _id: responseSave._id.toString(),
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         // console.log(error);
-  //         res.json({error: 'Save Error'});
-  //       });
-  //   })
-  //   .catch((error) => {
-  //     // console.log(error);
-  //     res.json({error: 'Save Error - Query'});
-  //   });
 });
 
 
@@ -286,28 +246,37 @@ app.get('/api/users/:_id/logs', (req, res) => {
   }
   else {
     console.log('--- >   sin parametros')
-    ExersiceModel.find({userid: dataUSer._id.toString()})
+    UserModel.findById(id)
       .limit(limitResult)
       .exec()
-      .then((exersiceUser) => {
-        console.log("----", exersiceUser)
-        let logData = [];
-        if (exersiceUser.length > 0) {
-          logData = exersiceUser.map(item => {
-            let result = {
-              description: item.description,
-              duration: item.duration,
-              date: item.date.toDateString()
-            }
-            return result;
-          });
-        };
-        res.json({
-          username: dataUSer.name,
-          count: exersiceUser.length,
-          _id: dataUSer._id.toString(),
-          log: logData
-        })
+      .then((dataUSer) => {
+        console.log(dataUSer)
+        ExersiceModel.find({userid: dataUSer._id.toString()})
+          .exec()
+          .then((exersiceUser) => {
+            console.log("----", exersiceUser)
+            let logData = [];
+            if (exersiceUser.length > 0) {
+              logData = exersiceUser.map(item => {
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: item.date.toDateString()
+                }
+                return result;
+              });
+            };
+            res.json({
+              username: dataUSer.name,
+              count: exersiceUser.length,
+              _id: dataUSer._id.toString(),
+              log: logData
+            })
+
+          })
+          .catch((error) => {
+            console.log(error)
+          })
 
       })
       .catch((error) => {
