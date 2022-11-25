@@ -168,6 +168,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
 
     UserModel.find({_id: id})
       .then((userMatch) => {
+
+        console.log('log - parameters ---> ', userMatch)
+
         if (
           from !== undefined &&
           from !== '' &&
@@ -219,32 +222,31 @@ app.get('/api/users/:_id/logs', (req, res) => {
             .find({date: {$gte: fromTime, $lte: toTime}})
             .limit(limitResult)
             .exec()
-              .then((exersiceUser) => {
-                console.log(exersiceUser[0].userid)
+            .then((exersiceUser) => {
+              console.log(exersiceUser[0].userid)
 
-                let resExercise = exersiceUser.map(item => {
-                  let dateEx = item.date.toUTCString().split(' ');
-                  let result = {
-                    description: item.description,
-                    duration: item.duration,
-                    date: item.date.toDateString()
-                  }
-                  return result;
-                })
-                res.json({
-                  _id: exersiceUser[0].userid.toString(),
-                  username: exersiceUser[0].username,
-                  from: fromTime.toDateString(),
-                  to: toTime.toDateString(),
-                  count: resExercise.length,
-                  log: resExercise
-                })
-
+              let resExercise = exersiceUser.map(item => {
+                let dateEx = item.date.toUTCString().split(' ');
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: item.date.toDateString()
+                }
+                return result;
               })
-              .catch((err) => {
-                console.log(err);
-                res.json({error: 'From To error data'})
+              res.json({
+                _id: exersiceUser[0].userid.toString(),
+                username: exersiceUser[0].username,
+                from: fromTime.toDateString(),
+                to: toTime.toDateString(),
+                count: resExercise.length,
+                log: resExercise
               })
+            })
+            .catch((err) => {
+              console.log(err);
+              res.json({error: 'From To error data'})
+            })
         };
 
       })
