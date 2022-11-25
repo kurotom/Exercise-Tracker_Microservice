@@ -194,9 +194,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
               });
               console.log(resExercise)
               res.json({
-                username: userMatch[0].name,
+                username: exersiceUser[0].username,
                 count: resExercise.length,
-                _id: id,
+                _id: exersiceUser[0]._id.toString(),
                 from: fromTime.toDateString(),
                 log: resExercise
               })
@@ -235,8 +235,8 @@ app.get('/api/users/:_id/logs', (req, res) => {
                   return result;
                 })
                 res.json({
-                  _id: id,
-                  username: userMatch[0].name,
+                  _id: exersiceUser[0]._id.toString(),
+                  username: exersiceUser[0].username,
                   from: fromTime.toDateString(),
                   to: toTime.toDateString(),
                   count: resExercise.length,
