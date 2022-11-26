@@ -105,34 +105,38 @@ app.post('/api/users', (req, res) => {
 app.post('/api/users/:_id/exercises', async (req, res) => {
   // let id = new mongoose.Types.ObjectId()
   // console.log(id.toString())
-  const userId = req.body.userID;
-  const description = req.body.description;
-  const duration = req.body.duration;
-  let fecha;
-  if (req.body.date !== undefined && req.body.date !== '') {
-    fecha = new Date(req.body.date).toDateString();
-  } else {
-    fecha = new Date().toDateString();
+  try {
+    const userId = req.body.userID;
+    const description = req.body.description;
+    const duration = req.body.duration;
+    let fecha;
+    if (req.body.date !== undefined && req.body.date !== '') {
+      fecha = new Date(req.body.date).toDateString();
+    } else {
+      fecha = new Date().toDateString();
+    }
+
+    const user = await UserModel.findById(userId);
+
+    const excersice = new ExersiceModel({
+      username: user.name,
+      userid: user._id,
+      description: description,
+      duration: Number(duration),
+      date: fecha
+    })
+    await excersice.save()
+
+    res.json({
+      username: excersice.username,
+      description: excersice.description,
+      duration: excersice.duration,
+      date: fecha,
+      _id: userId
+    })  
+  } catch (e) {
+    res.json({error: error.message});
   }
-  console.log(fecha, userId)
-  const user = await UserModel.findById(userId);
-
-  const excersice = new ExersiceModel({
-    username: user.name,
-    userid: user._id,
-    description: description,
-    duration: Number(duration),
-    date: fecha
-  })
-  await ex.save()
-
-  res.json({
-    username: excersice.username,
-    description: excersice.description,
-    duration: excersice.duration,
-    date: fecha,
-    _id: userId
-  })
 
   // UserModel.find(userId)
   //   .then((userMatch) => {
