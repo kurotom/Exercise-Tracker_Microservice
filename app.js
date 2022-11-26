@@ -256,49 +256,43 @@ app.get('/api/users/:_id/logs', (req, res) => {
   }
   else {
     console.log('--- >   sin parametros')
-    ExersiceModel.find({userid: id})
-      .limit(limitResult)
-      .exec()
-      .then((exersiceResponse) => {
-        let logData = [];
-        if (exersiceResponse.length > 0) {
-          logData = exersiceResponse.map(item => {
-            let result = {
-              description: item.description,
-              duration: item.duration,
-              date: item.date.toDateString()
-            }
-            return result;
-          });
-        };
+    UserModel.find({_id: id})
+      .then((userMatch) => {
+        try {
+          ExersiceModel.find({userid: id})
+            .then((exersiceUser) => {
 
-        UserModel.findById(id)
-          .exec()
-          .then((dataUSer) => {
-            console.log(exersiceResponse[0])
-            try {
-              res.json({
-                username: exersiceResponse[0].username,
-                count: exersiceResponse.length,
-                _id: exersiceResponse[0].userid.toString(),
-                log: logData
+              let resExercise = exersiceUser.map(item => {
+                let dateEx = item.date.toUTCString().split(' ');
+                let result = {
+                  description: item.description,
+                  duration: item.duration,
+                  date: item.date.toDateString()
+                }
+                return result;
               })
-            } catch (error) {
               res.json({
-                username: dataUSer.name,
-                count: exersiceResponse.length,
-                _id: dataUSer._id.toString(),
-                log: logData
+                username: exersiceUser[0].username,
+                count: resExercise.length,
+                _id: exersiceUser[0].userid.toString(),
+                log: resExercise
               })
-            }
-
-
+            })
+            .catch((error) => {
+              res.json({error: 'Save Error - Query'});
+            })
+        } catch (error) {
+          res.json({
+            username: userMatch[0].name,
+            count: 0,
+            _id: userMatch[0]._id.toString(),
+            log: []
           })
-
+        }
       })
       .catch((error) => {
-        res.json({error: 'Server Error - (query no parameters)'})
-      })
+        res.json({error: 'Query Error - no parameters'});
+      });
 
   }
 
