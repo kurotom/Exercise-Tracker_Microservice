@@ -150,7 +150,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 });
 
 
-app.get('/api/users/:_id/logs', (req, res) => {
+app.get('/api/users/:_id/logs', async (req, res) => {
   console.log('qurey LOGS aprams', req.params, req.query);
   const id = req.params._id;
 
@@ -158,35 +158,34 @@ app.get('/api/users/:_id/logs', (req, res) => {
   const from = req.query.from || new Date(0);
   const to = req.query.to || new Date(Date.now());
 
-  console.log(from)
+  console.log(from, to, limitResult)
 
 
-  ExersiceModel.find({userid: id})
+  const exercise = await ExersiceModel.find({userid: id})
     .find({date: {$gte: from, $lte: to}})
     .limit(limitResult)
-    .exec()
-    .then((response) => {
+
+  UserModel.findById({_id: id})
+    .then((user) => {
       let logData = [];
-      logData = response.map(item => {
+      logData = exercise.map(item => {
         return {
           description: item.description,
           duration: item.duration,
           date: item.date.toDateString()
         }
       });
-      UserModel.findById({_id: id})
-        .then((user) => {
-          res.json({
-            username: user.name,
-            count: logData.length,
-            _id: user._id,
-            log: logData
-          })
+
+      res.json({
+          username: user.name,
+          count: logData.length,
+          _id: user._id,
+          log: logData
         })
-        .catch((error) => {
-          console.log(`${user.name, user._id.toString()}---`, error)
-        });
-    })
+      })
+      .catch((error) => {
+        console.log(`${user.name, user._id.toString()}---`, error)
+      });
 
 
 
