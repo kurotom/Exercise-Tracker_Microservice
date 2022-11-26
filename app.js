@@ -158,28 +158,35 @@ app.get('/api/users/:_id/logs', (req, res) => {
   const from = req.query.from || new Date(0);
   const to = req.query.to || new Date(Date.now());
 
-  ExersiceModel.find({userid: id})
-    .find({date: {$gte: from, $lte: to}})
-    .limit(limitResult)
-    .exec()
-    .then((response) => {
+  UserModel.findById({_id: id})
+    .then((user) => {
+      ExersiceModel.find({userid: id})
+        .find({date: {$gte: from, $lte: to}})
+        .limit(limitResult)
+        .exec()
+        .then((response) => {
 
-      let logData = response.map(item => {
-        return {
-          description: item.description,
-          duration: item.duration,
-          date: item.date.toDateString()
-        }
-      });
+          let logData = response.map(item => {
+            return {
+              description: item.description,
+              duration: item.duration,
+              date: item.date.toDateString()
+            }
+          });
 
 
-      res.json({
-        username: response[0].username,
-        count: logData.length,
-        _id: response[0].userid,
-        log: logData
-      })
+          res.json({
+            username: user.name,
+            count: logData.length,
+            _id: user._id,
+            log: logData
+          })
+        })
     })
+    .catch((error) => {
+
+    })
+
 
 
 
