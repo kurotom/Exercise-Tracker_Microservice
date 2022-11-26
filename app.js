@@ -165,16 +165,14 @@ app.get('/api/users/:_id/logs', (req, res) => {
         .limit(limitResult)
         .exec()
         .then((response) => {
-
-          let logData = response.map(item => {
+          let logData = [];
+          logData = response.map(item => {
             return {
               description: item.description,
               duration: item.duration,
               date: item.date.toDateString()
             }
           });
-
-
           res.json({
             username: user.name,
             count: logData.length,
@@ -184,7 +182,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
         })
     })
     .catch((error) => {
-
+      console.log(`${user.name, user._id.toString()}---`, error)
     })
 
 
