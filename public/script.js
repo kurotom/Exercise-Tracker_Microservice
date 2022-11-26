@@ -32,15 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // Formulario exersice
   exerciseForm.addEventListener('submit', (evento) => {
     evento.preventDefault();
-    if (
-      userID.value !== '' &&
-      exersice.value !== '' &&
-      duration.value !== ''
-    ) {
-      const urlpost = `/api/users/${userID.value}/exercises`;
-      exerciseForm.action = urlpost;
-      exerciseForm.submit()
-    };
+    const urlpost = `/api/users/${userID.value}/exercises`;
+    exerciseForm.action = urlpost;
+    exerciseForm.submit()
+    // if (
+    //   userID.value !== '' &&
+    //   exersice.value !== '' &&
+    //   duration.value !== ''
+    // ) {
+    // };
   });
 
 

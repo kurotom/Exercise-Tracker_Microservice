@@ -104,6 +104,14 @@ app.post('/api/users', (req, res) => {
 // API EXERSICES
 app.post('/api/users/:_id/exercises', async (req, res) => {
   console.log('api excersices', req.body.date)
+
+  if (
+    req.body.description === undefined && req.body.description === '' &&
+    req.body.duration === undefined && req.body.duration === ''
+  ) {
+    res.json({error: 'description and duration are required!'})
+  } else {
+
   try {
     const userId = req.body.userID;
     const description = req.body.description;
@@ -136,6 +144,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   } catch (error) {
     res.json({error: error.message});
   }
+};
 });
 
 
