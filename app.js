@@ -133,8 +133,8 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       duration: excersice.duration,
       date: fecha,
       _id: userId
-    })  
-  } catch (e) {
+    })
+  } catch (error) {
     res.json({error: error.message});
   }
 
