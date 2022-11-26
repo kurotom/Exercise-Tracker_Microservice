@@ -154,25 +154,28 @@ app.get('/api/users/:_id/logs', (req, res) => {
   console.log('qurey LOGS aprams', req.params, req.query);
   const id = req.params._id;
 
-  let limitResult = Number(req.query.limit) || 0;
+  const limitResult = Number(req.query.limit) || 0;
   const from = req.query.from || new Date(0);
   const to = req.query.to || new Date(Date.now());
 
-  UserModel.findById({_id: id})
-    .then((user) => {
-      ExersiceModel.find({userid: id})
-        .find({date: {$gte: from, $lte: to}})
-        .limit(limitResult)
-        .exec()
-        .then((response) => {
-          let logData = [];
-          logData = response.map(item => {
-            return {
-              description: item.description,
-              duration: item.duration,
-              date: item.date.toDateString()
-            }
-          });
+  console.log(from)
+
+
+  ExersiceModel.find({userid: id})
+    .find({date: {$gte: from, $lte: to}})
+    .limit(limitResult)
+    .exec()
+    .then((response) => {
+      let logData = [];
+      logData = response.map(item => {
+        return {
+          description: item.description,
+          duration: item.duration,
+          date: item.date.toDateString()
+        }
+      });
+      UserModel.findById({_id: id})
+        .then((user) => {
           res.json({
             username: user.name,
             count: logData.length,
@@ -180,10 +183,11 @@ app.get('/api/users/:_id/logs', (req, res) => {
             log: logData
           })
         })
+        .catch((error) => {
+          console.log(`${user.name, user._id.toString()}---`, error)
+        });
     })
-    .catch((error) => {
-      console.log(`${user.name, user._id.toString()}---`, error)
-    })
+
 
 
 
