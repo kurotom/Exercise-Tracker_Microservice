@@ -102,51 +102,73 @@ app.post('/api/users', (req, res) => {
 //
 //
 // API EXERSICES
-app.post('/api/users/:_id/exercises', (req, res) => {
+app.post('/api/users/:_id/exercises', async (req, res) => {
   // let id = new mongoose.Types.ObjectId()
   // console.log(id.toString())
   const userId = req.body.userID;
   const description = req.body.description;
   const duration = req.body.duration;
-  let date = '';
-  if (req.body.date === '' || req.body.date === '') {
-    let fecha = new Date();
-    date = `${fecha.getFullYear()}-${fecha.getMonth() < 10? '0' + fecha.getMonth() + 1: fecha.getMonth()}-${fecha.getDate() < 10? '0' + fecha.getDate() + 1: fecha.getDate()}`
+  let fecha;
+  if (req.body.date !== undefined && req.body.date !== '') {
+    fecha = new Date(req.body.date).toDateString();
   } else {
-    date = req.body.date;
+    fecha = new Date().toDateString();
   }
+  console.log(fecha, userId)
+  const user = await UserModel.findById(userId);
 
-  UserModel.find({_id: userId})
-    .then((userMatch) => {
+  const excersice = new ExersiceModel({
+    username: user.name,
+    userid: user._id,
+    description: description,
+    duration: Number(duration),
+    date: fecha
+  })
+  await ex.save()
 
-      const excerUser = new ExersiceModel({
-        username: userMatch[0].name,
-        userid: userId,
-        description: description,
-        duration: parseInt(duration),
-        date: date
-      })
-      excerUser.save()
-        .then((responseSave) => {
-          console.log('save');
-        })
-        .catch((error) => {
-          // console.log(error);
-          res.json({error: 'Save Error'});
-        });
+  res.json({
+    username: excersice.username,
+    description: excersice.description,
+    duration: excersice.duration,
+    date: fecha,
+    _id: userId
+  })
 
-      res.json({
-        username: userMatch[0].name,
-        _id: userId,
-        description: description,
-        duration: parseInt(duration),
-        date: new Date(date).toDateString()
-      })
-    })
-    .catch((error) => {
-      // console.log(error);
-      res.json({error: 'Save Error - Query'});
-    });
+  // UserModel.find(userId)
+  //   .then((userMatch) => {
+  //     console.log(userMatch)
+  //     if (userMatch.length > 0) {
+  //       const excerUser = new ExersiceModel({
+  //         username: userMatch[0].name,
+  //         userid: userId,
+  //         description: description,
+  //         duration: Number(duration),
+  //         date: fecha
+  //       })
+  //       excerUser.save()
+  //         .then((responseSave) => {
+  //           console.log('save');
+  //         })
+  //         .catch((error) => {
+  //           // console.log(error);
+  //           res.json({error: 'Save Error'});
+  //         });
+  //
+  //       res.json({
+  //         username: userMatch[0].name,
+  //         _id: userId,
+  //         description: description,
+  //         duration: parseInt(duration),
+  //         date: new Date(date).toDateString()
+  //       })
+  //     } else {
+  //       res.json({nouser: 'user not found'});
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     // console.log(error);
+  //     res.json({error: 'Save Error - Query'});
+  //   });
 });
 
 
