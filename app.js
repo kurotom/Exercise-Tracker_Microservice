@@ -68,42 +68,45 @@ app.get('/api/users', (req, res) => {
 
 app.post('/api/users', (req, res) => {
   const nameUser = req.body.username;
+  if (nameUser === '') {
+    res.json({error: 'need username'})
+  } else {
+    UserModel.find({name: nameUser})
+      .then((response) => {
 
-  UserModel.find({name: nameUser})
-    .then((response) => {
-
-      if (response.length > 0) {
-        res.json({
-          username: response[0].name,
-          _id: response[0]._id.toString(),
-        });
-
-      } else if (response.length === 0) {
-        const userCreate = new UserModel({name: nameUser});
-        userCreate.save()
-          .then((result) => {
-            res.json({
-              username: result.name,
-              _id: result._id.toString(),
-            });
-          })
-          .catch((error) => {
-            // console.log('Error Server -->', error);
-            res.json({error: 'Server Error'});
+        if (response.length > 0) {
+          res.json({
+            username: response[0].name,
+            _id: response[0]._id.toString(),
           });
-      };
-    })
-    .catch((error) => {
-      // console.log(error);
-      res.json({error: 'Server Error'});
-    });
+
+        } else if (response.length === 0) {
+          const userCreate = new UserModel({name: nameUser});
+          userCreate.save()
+            .then((result) => {
+              res.json({
+                username: result.name,
+                _id: result._id.toString(),
+              });
+            })
+            .catch((error) => {
+              // console.log('Error Server -->', error);
+              res.json({error: 'Server Error'});
+            });
+        };
+      })
+      .catch((error) => {
+        // console.log(error);
+        res.json({error: 'Server Error'});
+      });
+  }
 });
 
 //
 //
 // API EXERSICES
 app.post('/api/users/:_id/exercises', async (req, res) => {
-  console.log('api excersices', req.body)
+  console.log('api excersices', req.params)
 
   if (
     req.body.description === '' || req.body.duration === ''
@@ -111,7 +114,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     res.json({error: 'description and duration are required!'})
   } else {
     try {
-      const userId = req.body.userID;
+      const userId = req.params._id;
       const description = req.body.description;
       const duration = req.body.duration;
       let fecha;
